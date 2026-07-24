@@ -1,0 +1,40 @@
+You are writing a TypeScript module `normalizePath.ts` from a behavioural specification. There is a hidden test suite; your implementation must satisfy it. You do NOT get to see the tests — implement strictly from this spec and the fixed API below.
+
+REQUIRED BEHAVIOUR — `normalizePath(p: string): string`  (POSIX semantics; do NOT import Node's "path")
+
+1. "" (empty) and a non-string both normalize to "." (the current directory).
+
+2. Collapse runs of "/" into a single "/": "a//b" -> "a/b", "///" -> "/".
+
+3. A path is ABSOLUTE if it begins with "/". Absolute paths keep exactly one leading "/". Relative paths never gain one.
+
+4. Drop "." segments entirely: "a/./b" -> "a/b", "./foo" -> "foo".
+
+5. Resolve ".." by popping the previous real segment: "a/b/../c" -> "a/c".
+   - In an ABSOLUTE path, a ".." that would rise above root is discarded: "/a/../.." -> "/", "/../x" -> "/x".
+   - In a RELATIVE path, a ".." with nothing to pop is KEPT: "../foo" -> "../foo", "a/../.." -> "..". Leading ".." accumulate: "../../x" -> "../../x". (A ".." never pops another "..".)
+
+6. Remove a trailing slash, EXCEPT the root: "foo/bar/" -> "foo/bar", but "/" stays "/".
+
+7. If an absolute path reduces to nothing, the result is "/". If a relative path reduces to nothing, the result is ".".
+
+Worked examples:
+  ""            -> "."
+  "/"           -> "/"
+  "///"         -> "/"
+  "a//b"        -> "a/b"
+  "a/./b"       -> "a/b"
+  "a/b/../c"    -> "a/c"
+  "a/b/./../c/" -> "a/c"
+  "/a/../.."    -> "/"
+  "/../a"       -> "/a"
+  "../foo"      -> "../foo"
+  "a/../.."     -> ".."
+  "foo/bar/"    -> "foo/bar"
+
+Keep the export name and signature EXACTLY as in the API skeleton below. Return ONLY the full contents of `normalizePath.ts` in a single ```ts code block — no prose.
+
+===== API skeleton (signature fixed; implement the body) =====
+export function normalizePath(p: string): string {
+  throw new Error("not implemented");
+}

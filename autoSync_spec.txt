@@ -1,0 +1,87 @@
+You are writing a TypeScript module `autoSync.ts` from a behavioural specification. There is a hidden test suite; your implementation must satisfy it. You do NOT get to see the tests — implement strictly from this spec and the fixed API below.
+
+REQUIRED BEHAVIOUR:
+
+1. `MIN_INTERVAL = 1` (minutes), `MAX_OVERRUNS = 3` (consecutive overruns before auto-pause).
+
+2. `sanitizeInterval(mins)`: 0 or negative means OFF -> return 0. NaN and Infinity mean OFF -> return 0. Otherwise floor to a whole number of minutes, but never below MIN_INTERVAL (e.g. 0.5 -> 1, 10.9 -> 10, 1 -> 1, 60 -> 60).
+
+3. `intervalFitsRun(durationMs, mins)`: return true only if the interval is enabled (mins > 0) AND the measured run duration is STRICTLY LESS THAN the interval length in ms (mins * 60000). A run that meets or exceeds the interval returns false. A disabled interval (mins = 0) returns false.
+
+4. `AutoSyncScheduler` drives a repeating timer via setInterval:
+   - `set(mins)`: sanitize the value, (re)start the timer at that period, and return the sanitized value actually applied. Restarting resets any overrun streak.
+   - `get interval`: the currently-applied sanitized interval (0 when off).
+   - On each timer tick: if `isBusy()` is true, DROP the tick — call `onSkip()` and do NOT queue or defer it (no catch-up run later). If not busy, call `startSync()`.
+   - `markStarted()`: record the start time of a run (used to measure its duration). Any run, scheduled or manual.
+   - `finished()`: measure elapsed time since markStarted, call `onMeasured(durationMs)`. If the schedule is enabled and the run OVERRAN (duration > interval*60000), increment a consecutive-overrun streak; when the streak reaches MAX_OVERRUNS, trip the circuit breaker: stop the schedule entirely (turn it OFF, interval becomes 0) and call `onPause(mins)` with the interval that kept overrunning. A run that did NOT overrun resets the streak to 0 (so non-consecutive overruns never trip it). If markStarted was never called, finished() is a no-op.
+   - `stop()`: halt the schedule completely — clear the timer, set interval to 0, reset the streak and any pending start time. No further ticks.
+
+Keep every export name, signature, and type EXACTLY as in the API skeleton below. Return ONLY the full contents of `autoSync.ts` in a single ```ts code block — no prose.
+
+===== API skeleton (signatures fixed; implement the bodies) =====
+// Pure auto-sync scheduler — no DOM, no Tauri, no file access.
+// Extracted from App.svelte so the timing/safety logic is unit-testable.
+//
+// Guarantees:
+//  - ticks are dropped (never queued) while a sync is in flight  → no pileup
+//  - intervals are floored to MIN_INTERVAL                       → no silly values
+//  - skipped ticks and overruns are surfaced via callbacks       → visible
+//  - N consecutive overruns auto-pause the schedule              → walk-away safety
+
+export const MIN_INTERVAL = 1; // minutes
+export const MAX_OVERRUNS = 3; // consecutive overruns before auto-pause
+
+/** Clamp a requested interval: 0 means off, anything else is floored to MIN_INTERVAL. */
+export function sanitizeInterval(mins: number): number {
+  throw new Error("not implemented");
+}
+
+/**
+ * Does a `mins`-minute interval comfortably exceed a measured run duration?
+ * Used by calibrate-on-enable: if a probe scan takes longer than the chosen
+ * interval, we refuse to arm rather than guarantee back-to-back runs.
+ */
+export function intervalFitsRun(durationMs: number, mins: number): boolean {
+  throw new Error("not implemented");
+}
+
+export interface AutoSyncCallbacks {
+  /** true while a sync (or connection test) is running — a tick is dropped if so. */
+  isBusy: () => boolean;
+  /** kick off a sync run. */
+  startSync: () => void;
+  /** a scheduled tick was dropped because a run was still in flight. */
+  onSkip: () => void;
+  /** a run finished; durationMs is how long it took. */
+  onMeasured: (durationMs: number) => void;
+  /** the circuit breaker tripped; the schedule has been turned off. mins = the interval that kept overrunning. */
+  onPause: (mins: number) => void;
+}
+
+export class AutoSyncScheduler {
+  constructor(private cb: AutoSyncCallbacks) {}
+
+  /** Set the interval (sanitized) and (re)start the timer. Returns the value actually applied. */
+  set(mins: number): number {
+    throw new Error("not implemented");
+  }
+
+  get interval(): number {
+    throw new Error("not implemented");
+  }
+
+  /** Call when ANY sync starts (manual or scheduled) so overrun timing is measured. */
+  markStarted(): void {
+    throw new Error("not implemented");
+  }
+
+  /** Call when a sync finishes. Drives overrun detection + the circuit breaker. */
+  finished(): void {
+    throw new Error("not implemented");
+  }
+
+  /** Stop the schedule entirely (off). */
+  stop(): void {
+    throw new Error("not implemented");
+  }
+}

@@ -1,0 +1,32 @@
+You are writing a TypeScript module `mergeRanges.ts` from a behavioural specification. There is a hidden test suite; your implementation must satisfy it. You do NOT get to see the tests — implement strictly from this spec and the fixed API below.
+
+REQUIRED BEHAVIOUR — `mergeRanges(ranges: [number, number][]): [number, number][]`
+
+Ranges are INCLUSIVE INTEGER ranges: [2, 5] means {2,3,4,5}.
+
+1. An empty input array returns []. A non-array input also returns [].
+
+2. NORMALIZE each input pair first:
+   - If a pair is reversed (start > end), swap it so start <= end. E.g. [5, 2] is treated as [2, 5].
+   - Drop any pair containing a non-finite number (NaN, Infinity) or that is not a length-2 array.
+
+3. SORT the normalized ranges ascending by start, breaking ties by end.
+
+4. MERGE two ranges when they overlap OR are integer-adjacent — that is, when the next range's start is <= the current merged range's end + 1:
+   - [1, 3] and [2, 5]  -> [1, 5]      (overlap)
+   - [1, 2] and [3, 4]  -> [1, 4]      (adjacent: gap of exactly 1)
+   - [1, 2] and [4, 5]  -> stay separate (gap of 2)
+   When merging, the combined end is the MAX of the two ends (a fully-contained range like [2,3] inside [1,10] does not shrink [1,10]).
+
+5. The result is SORTED ascending and MINIMAL (no two output ranges overlap or are adjacent). Each output element is a fresh [start, end] pair.
+
+6. A single range in -> that same range out (normalized). Duplicate identical ranges collapse to one.
+
+Keep every export name, signature, and type EXACTLY as in the API skeleton below. Return ONLY the full contents of `mergeRanges.ts` in a single ```ts code block — no prose.
+
+===== API skeleton (signatures fixed; implement the bodies) =====
+export type Range = [number, number];
+
+export function mergeRanges(ranges: Range[]): Range[] {
+  throw new Error("not implemented");
+}

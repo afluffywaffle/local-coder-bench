@@ -1,0 +1,41 @@
+You are writing a TypeScript module `retryWithBackoff.ts` from a behavioural specification. There is a hidden test suite that drives it with FAKE TIMERS; your implementation must satisfy it. You do NOT get to see the tests — implement strictly from this spec and the fixed API below.
+
+REQUIRED BEHAVIOUR — `retryWithBackoff<T>(fn, opts): Promise<T>`
+
+`fn` is `(attempt: number) => Promise<T>` and is called with the 1-based attempt number.
+`opts`: { attempts: number; baseMs: number; factor?: number (default 2); capMs?: number (default Infinity); signal?: AbortSignal }.
+
+1. Call `fn(1)`. If it resolves, resolve with that value immediately — no delay, no further calls.
+
+2. If `fn` rejects and attempts remain, WAIT a backoff delay (via setTimeout), then call `fn` again with the next attempt number. Repeat up to `attempts` TOTAL calls.
+
+3. Backoff delay BEFORE attempt k (k >= 2) is: min(capMs, baseMs * factor^(k-2)).
+   So with baseMs=100, factor=2: delay before attempt 2 = 100, before attempt 3 = 200, before attempt 4 = 400 — each capped at capMs. (The exponent is the number of retries already done: 0 for the first retry.)
+
+4. After the FINAL attempt fails, there is NO trailing delay — reject with the LAST error thrown by `fn`.
+
+5. `attempts` counts the first try. attempts=1 means call `fn` once and, if it rejects, reject immediately with that error (no retry, no delay).
+
+6. ABORT via `opts.signal`:
+   - If the signal is ALREADY aborted when called, reject immediately with `signal.reason` (or a generic Error if reason is undefined) — do not call `fn` at all.
+   - If the signal aborts DURING a backoff wait, cancel the pending timer and reject with `signal.reason` — do not make the next attempt.
+
+7. Every single delay is capped at capMs (a large baseMs*factor^n is clamped down to capMs).
+
+Keep every export name, signature, and type EXACTLY as in the API skeleton below. Return ONLY the full contents of `retryWithBackoff.ts` in a single ```ts code block — no prose.
+
+===== API skeleton (signatures fixed; implement the bodies) =====
+export interface BackoffOptions {
+  attempts: number;
+  baseMs: number;
+  factor?: number;
+  capMs?: number;
+  signal?: AbortSignal;
+}
+
+export async function retryWithBackoff<T>(
+  fn: (attempt: number) => Promise<T>,
+  opts: BackoffOptions,
+): Promise<T> {
+  throw new Error("not implemented");
+}

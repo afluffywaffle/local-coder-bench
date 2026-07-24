@@ -1,0 +1,9 @@
+node_modules
+.iso
+.git
+__pycache__
+*.pyc
+*.log
+outputs
+out
+.DS_Store

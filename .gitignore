@@ -1,0 +1,53 @@
+# deps / build
+node_modules/
+package-lock.json
+
+# harness scratch + isolation dirs
+.iso/
+.vitest_*.json
+outputs/**/.*
+
+# working module scratch (harness regenerates these from *.STUB.ts / model output)
+autoSync.ts
+parseQuery.ts
+mergeRanges.ts
+retryWithBackoff.ts
+normalizePath.ts
+
+# logs
+*.log
+
+# local run-log telemetry (private; see README "Local run log")
+run_log.jsonl
+
+# private planning doc + legacy single-shot scripts (contain personal paths / superseded)
+PLAN.md
+run.py
+run2.py
+mlx_run.py
+mlx_multi.py
+mlx_7b_scratch.py
+build_scratch_prompt.py
+prompt.txt
+prompt_scratch.txt
+
+# benchmark RESULTS + sample OUTPUTS are never shipped — a bench should produce your own,
+# not anchor them to the author's. All kept LOCAL only.
+results_iterate_*.json
+MATRIX.txt
+outputs/
+
+# legacy pre-iterate results (kept local)
+results.json
+results2.json
+results_local7b.json
+results_DeepSeek-Coder-V2-Lite-16B.json
+results_Qwen2.5-Coder-14B.json
+
+# os
+.DS_Store
+
+# python cache + legacy pre-iterate outputs
+__pycache__/
+*.pyc
+out/

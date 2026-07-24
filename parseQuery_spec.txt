@@ -1,0 +1,32 @@
+You are writing a TypeScript module `parseQuery.ts` from a behavioural specification. There is a hidden test suite; your implementation must satisfy it. You do NOT get to see the tests — implement strictly from this spec and the fixed API below.
+
+REQUIRED BEHAVIOUR — `parseQuery(input: string): Record<string, string | string[]>`
+
+1. A leading "?" is optional and stripped if present. An empty string, or a string that is only "?", returns an empty object {}.
+
+2. Split the (de-prefixed) string on "&" into segments. EMPTY segments are skipped — so "a=1&&b=2", "a=1&", and "&a=1" all behave as if the empty segment were not there.
+
+3. Each segment is split on its FIRST "=" only (values may themselves contain "="):
+   - "key=value"  -> key with value "value"
+   - "key="       -> key with value "" (empty string)
+   - "key"        -> key with value "" (empty string; a bare key with no "=")
+   - "a=b=c"      -> key "a" with value "b=c"
+
+4. Keys and values are URL-decoded: first every "+" becomes a space, then percent-decoding is applied (as decodeURIComponent). Decoding applies to BOTH key and value. Examples: "a%20b=c%2Bd" -> key "a b", value "c+d"; "x+y=1" -> key "x y".
+
+5. MALFORMED percent escapes (e.g. "%zz", "%", "50%") must NOT throw. On a decode failure, fall back to the token with only "+"->space applied (i.e. the un-percent-decoded form).
+
+6. After decoding, a segment whose KEY is empty (e.g. "=v", or a segment that decodes to an empty key) is ignored entirely.
+
+7. Duplicate keys collapse to an ARRAY of their values, in order of appearance. First occurrence alone -> a plain string; second occurrence -> becomes ["v1","v2"]; further occurrences append. A key seen once stays a string, never a one-element array.
+
+8. If input is not a string, return {}.
+
+Keep every export name, signature, and type EXACTLY as in the API skeleton below. Return ONLY the full contents of `parseQuery.ts` in a single ```ts code block — no prose.
+
+===== API skeleton (signatures fixed; implement the bodies) =====
+export type QueryValue = string | string[];
+
+export function parseQuery(input: string): Record<string, QueryValue> {
+  throw new Error("not implemented");
+}
